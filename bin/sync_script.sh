@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 PATH_DOWNLOAD=./
-USER_AGENT="Mozilla/5.0 (X11; Arch Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0"
+USER_AGENT="curl/8.10.1"
 
 # json status mirrors
 NAME_SCRIPT=json
