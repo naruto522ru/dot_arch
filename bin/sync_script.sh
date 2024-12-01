@@ -6,9 +6,9 @@ USER_AGENT="Mozilla/5.0 (X11; Arch Linux x86_64; rv:128.0) Gecko/20100101 Firefo
 # json status mirrors
 NAME_SCRIPT=json
 URL=https://archlinux.org/mirrors/status
-if [[ $(curl -is -H "$USER_AGENT" -4s --max-time 90 --retry-delay 3 --retry 5 ${URL}/${NAME_SCRIPT}/ | head -n 2 | grep -i HTTP | awk '{print $2}') == 200 ]]; then
+if [[ $(curl -x http://"$SUPER_SECRET1":"$SUPER_SECRET2" -U "$SUPER_SECRET3":"$SUPER_SECRET4" -is -H "$USER_AGENT" -4s --max-time 90 --retry-delay 3 --retry 5 ${URL}/${NAME_SCRIPT}/ | head -n 2 | grep -i HTTP | awk '{print $2}') == 200 ]]; then
     echo "Скрипт ${NAME_SCRIPT} доступен. Скачиваем его на GitHub!"
-    curl -H "$USER_AGENT" -4s --max-time 90 --retry-delay 3 --retry 5 ${URL}/${NAME_SCRIPT}/ > ${PATH_DOWNLOAD}/${NAME_SCRIPT}
+    curl -x http://"$SUPER_SECRET1":"$SUPER_SECRET2" -U "$SUPER_SECRET3":"$SUPER_SECRET4" -H "$USER_AGENT" -4s --max-time 90 --retry-delay 3 --retry 5 ${URL}/${NAME_SCRIPT}/ > ${PATH_DOWNLOAD}/${NAME_SCRIPT}
 else
     echo "$(date +"%d.%m.%y %H:%M:%S"): Скрипт ${NAME_SCRIPT} недоступен. Не скачиваем его на GitHub,оставляем старый\!"
 fi

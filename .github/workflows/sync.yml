@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
   schedule:
     # * is a special character in YAML so you have to quote this string
-    - cron:  '5 * * * *'
+    - cron:  '12 * * * *'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -94,10 +94,13 @@ jobs:
 ############################
 
     - name: Test DNS-query
+      env:
+        SUPER_SECRET1: ${{ secrets.DOMAIN_PROXY }}
       run: |
        nslookup -type=A google.com
        echo ""
        dig google.com A
+       dig ${SUPER_SECRET1} A +short &>/dev/null && dig ${SUPER_SECRET1} A +short &>/dev/null
 
     - name: Install dependencies for start script
       env:
@@ -115,6 +118,10 @@ jobs:
       env:
         LANG: en_US.UTF-8
         CHARSET: UTF-8
+        SUPER_SECRET1: ${{ secrets.DOMAIN_PROXY }}
+        SUPER_SECRET2: ${{ secrets.PROXY_PORT }}
+        SUPER_SECRET3: ${{ secrets.USER }}
+        SUPER_SECRET4: ${{ secrets.PASSWORD }}
       run: |
         bash -x bin/sync_script.sh && dos2unix ./json*
 
