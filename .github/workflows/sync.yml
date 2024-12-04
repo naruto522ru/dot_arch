@@ -21,77 +21,26 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v4
 
-#    - name: Change DNS-Server's in runner
-#      run: |
-#       echo -e "nameserver 1.0.0.1\nnameserver 8.8.4.4\nnameserver 8.8.8.8\nnameserver 1.1.1.1" | sudo tee /etc/resolv.conf.DNSoverride &>/dev/null;
-#       sudo ln -svf /etc/resolv.conf.DNSoverride /etc/resolv.conf
-#       echo ""
-#       cat -n /etc/resolv.conf
-#       echo ""
-
-#    - name: Settings DoT DNS with systemd-resolved
-#      run: |
-#       sudo apt update
-#       sudo apt install -y bind9-dnsutils sudo --no-install-suggests
-#       sudo mkdir -pv /etc/systemd/resolved.conf.d/
-#       echo -e "[Resolve]\nDNS=8.8.4.4#dns.google\nFallbackDNS=\nDNSOverTLS=yes\nDNSSEC=yes\nCache=yes\nCacheFromLocalhost=yes\nReadEtcHosts=no" | sudo tee /etc/systemd/resolved.conf.d/google.conf &>/dev/null;
-#       echo -e "[Resolve]\nDNS=1.0.0.1#1dot1dot1dot1.cloudflare-dns.com\nFallbackDNS=\nDNSOverTLS=yes\nDNSSEC=yes\nCache=yes\nCacheFromLocalhost=yes\nReadEtcHosts=no" | sudo tee /etc/systemd/resolved.conf.d/cloudflare.conf &>/dev/null;
-#       cat /etc/systemd/resolved.conf.d/google.conf
-#       echo ""
-#       cat /etc/systemd/resolved.conf.d/cloudflare.conf
-#       echo ""
-#       echo "nameserver 127.0.0.53" | sudo tee /etc/resolv.conf.DNSoverride &>/dev/null;
-#       sudo ln -svf /etc/resolv.conf.DNSoverride /etc/resolv.conf
-#       cat -n /etc/resolv.conf
-#       echo ""
-#       cat -n /etc/hosts
-#       echo ""
-#       sudo systemctl restart systemd-resolved.service
-#       sleep 3s
-#       nc -z -v 127.0.0.53 53 && echo ""
-
-############################
-    - name: Install depens for CoreDNS
-      env:
-        DEBIAN_FRONTEND: noninteractive
+    - name: Settings DoT DNS with systemd-resolved
       run: |
-       sudo apt update && sudo apt install curl make software-properties-common git -y --no-install-suggests && sudo add-apt-repository ppa:longsleep/golang-backports -y
-       sudo apt install golang upx-ucl -y --no-install-suggests
-
-    - name: Compile CoreDNS
-      env:
-        DEBIAN_FRONTEND: noninteractive
-      run: |
-       git clone --depth 1 https://github.com/coredns/coredns.git
-       cd coredns && make -j$(nproc) && sudo upx -q ./coredns && sudo cp coredns /usr/local/bin/ && cd ../ && sudo rm -r ./coredns/
-       sudo apt autoremove golang upx-ucl -y
-
-    - name: Install CoreDNS
-      env:
-        URL_CONFIG_COREDNS: https://gist.githubusercontent.com/naruto522ru/e244f9f6fe96a609b8d9cf2f1f478bdf/raw/51ece1c11022cd9604206bff94698316567a4881/CoreDNS_config.conf
-      run: |
-       sudo chmod -c 755 /usr/local/bin/coredns && sudo chown -c root:root /usr/local/bin/coredns
-       whereis coredns
-       sudo mkdir -p /etc/coredns/ /etc/systemd/system/
-       echo -e "[Unit]\nDescription=CoreDNS DNS server\nDocumentation=https://coredns.io\nAfter=network.target\n[Service]\nPermissionsStartOnly=true\nLimitNOFILE=1048576\nLimitNPROC=512\nCapabilityBoundingSet=CAP_NET_BIND_SERVICE\nAmbientCapabilities=CAP_NET_BIND_SERVICE\nNoNewPrivileges=true\nUser=root\nExecStart=/usr/local/bin/coredns -conf=/etc/coredns/Corefile\nExecReload=/bin/kill -SIGUSR1 $MAINPID\nRestart=on-failure\n[Install]\nWantedBy=multi-user.target" | sudo tee /etc/systemd/system/coredns.service
-       curl --max-time 30 --retry-delay 3 --retry 10 -4 -# ${URL_CONFIG_COREDNS} | sudo tee /etc/coredns/Corefile &>/dev/null
-       sudo chown root:root /etc/coredns/Corefile
-       sudo cat -n /etc/coredns/Corefile
-       echo ""
-       sudo systemctl daemon-reload
-
-    - name: Change DNS-Server's using CoreDNS
-      run: |
-       echo "nameserver 127.0.0.1" | sudo tee /etc/resolv.conf.DNSoverride &>/dev/null;
-       sudo ln -svf /etc/resolv.conf.DNSoverride /etc/resolv.conf
-       echo ""
-       cat -n /etc/resolv.conf
-       echo ""
-       sudo systemctl stop systemd-resolved.service && sudo systemctl disable systemd-resolved.service
-       sudo systemctl start coredns.service && sleep 15s && echo "" && nc -z -v 127.0.0.1 53 && echo ""
-       systemctl -q status coredns.service
-
-############################
+         sudo apt update
+         sudo apt install -y bind9-dnsutils sudo --no-install-suggests
+         sudo mkdir -pv /etc/systemd/resolved.conf.d/
+         echo -e "[Resolve]\nDNS=8.8.4.4#dns.google\nFallbackDNS=\nDNSOverTLS=yes\nDNSSEC=yes\nCache=yes\nCacheFromLocalhost=yes\nReadEtcHosts=no" | sudo tee /etc/systemd/resolved.conf.d/google.conf &>/dev/null;
+         echo -e "[Resolve]\nDNS=1.0.0.1#1dot1dot1dot1.cloudflare-dns.com\nFallbackDNS=\nDNSOverTLS=yes\nDNSSEC=yes\nCache=yes\nCacheFromLocalhost=yes\nReadEtcHosts=no" | sudo tee /etc/systemd/resolved.conf.d/cloudflare.conf &>/dev/null;
+         cat /etc/systemd/resolved.conf.d/google.conf
+         echo ""
+         cat /etc/systemd/resolved.conf.d/cloudflare.conf
+         echo ""
+         echo "nameserver 127.0.0.53" | sudo tee /etc/resolv.conf.DNSoverride &>/dev/null;
+         sudo ln -svf /etc/resolv.conf.DNSoverride /etc/resolv.conf
+         cat -n /etc/resolv.conf
+         echo ""
+         cat -n /etc/hosts
+         echo ""
+         sudo systemctl restart systemd-resolved.service
+         sleep 3s
+         nc -z -v 127.0.0.53 53 && echo ""
 
     - name: Test DNS-query
       env:
@@ -106,9 +55,8 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
-       sudo apt update
        sudo apt upgrade -y
-       sudo apt install -y bind9-dnsutils git wget curl bash coreutils util-linux moreutils ccache dos2unix sudo language-pack-ru language-pack-en locales --no-install-suggests
+       sudo apt install -y git wget curl bash coreutils util-linux moreutils ccache dos2unix sudo language-pack-ru language-pack-en locales --no-install-suggests
        sudo sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
        sudo sed -i -e 's/# ru_RU.UTF-8 UTF-8/ru_RU.UTF-8 UTF-8/' /etc/locale.gen && \
        sudo locale-gen --no-purge en_US.UTF-8 ru_RU.UTF-8 && \
