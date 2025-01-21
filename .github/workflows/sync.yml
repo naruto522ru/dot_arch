@@ -70,6 +70,8 @@ jobs:
         SUPER_SECRET2: ${{ secrets.PROXY_PORT }}
         SUPER_SECRET3: ${{ secrets.USER }}
         SUPER_SECRET4: ${{ secrets.PASSWORD }}
+        SUPER_SECRET5: ${{ secrets.DOMAIN_PROXY2 }}
+        SUPER_SECRET6: ${{ secrets.PROXY_PORT2 }}
       run: |
         bash -x bin/sync_script.sh && dos2unix ./json*
 
