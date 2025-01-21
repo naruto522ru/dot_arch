@@ -7,7 +7,7 @@ USER_AGENT="curl/8.10.1"
 NAME_SCRIPT=json
 URL=https://archlinux.org/mirrors/status
 # Check the availability of the proxy server. The availability of the proxy server determines which one will be selected.
-if [[ nc -z -v "$SUPER_SECRET1" "$SUPER_SECRET2" &>/dev/null ]]; then
+if nc -z -v "$SUPER_SECRET1" "$SUPER_SECRET2" &>/dev/null; then
     echo "Proxy server \#1 is available!"
     if [[ $(curl -x http://"$SUPER_SECRET1":"$SUPER_SECRET2" -U "$SUPER_SECRET3":"$SUPER_SECRET4" -is -H "$USER_AGENT" -4s --max-time 90 --retry-delay 3 --retry 5 ${URL}/${NAME_SCRIPT}/ | head -n 2 | grep -i HTTP | awk '{print $2}') == 200 ]]; then
         echo "Скрипт ${NAME_SCRIPT} доступен. Скачиваем его на GitHub!"
@@ -17,7 +17,7 @@ if [[ nc -z -v "$SUPER_SECRET1" "$SUPER_SECRET2" &>/dev/null ]]; then
     fi
 else
     echo "Proxy server \#1 is not available!"
-    if [[ nc -z -v "$SUPER_SECRET5" "$SUPER_SECRET6" &>/dev/null ]]; then
+    if nc -z -v "$SUPER_SECRET5" "$SUPER_SECRET6" &>/dev/null; then
         echo "Proxy server \#2 is available!"
         if [[ $(curl -x http://"$SUPER_SECRET5":"$SUPER_SECRET6" -U "$SUPER_SECRET3":"$SUPER_SECRET4" -is -H "$USER_AGENT" -4s --max-time 90 --retry-delay 3 --retry 5 ${URL}/${NAME_SCRIPT}/ | head -n 2 | grep -i HTTP | awk '{print $2}') == 200 ]]; then
             echo "Скрипт ${NAME_SCRIPT} доступен. Скачиваем его на GitHub!"
